@@ -1,16 +1,16 @@
+use sqlx::{Connection, Executor, PgConnection, PgPool};
 use std::net::TcpListener;
-use sqlx::{PgConnection, Executor, PgPool, Connection};
 use uuid::Uuid;
-use zero2prod::configuration::{DatabaseSettings, get_configuration};
+use zero2prod::configuration::{get_configuration, DatabaseSettings};
 use zero2prod::startup;
 
 #[tokio::test]
 async fn subscribe_returns_a_200_for_valid_form_data() {
-//     Arrange
+    //     Arrange
     let app = spawn_app().await;
     let client = reqwest::Client::new();
 
-//     Act
+    //     Act
     let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
     let response = client
         .post(format!("{}/subscriptions", &app.address))
@@ -20,7 +20,7 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
         .await
         .expect("Failed to execute request");
 
-//     Assert
+    //     Assert
     assert_eq!(200, response.status().as_u16());
 
     let saved = sqlx::query!("SELECT email, name FROM subscriptions")
@@ -33,13 +33,13 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
 
 #[tokio::test]
 async fn subscribe_returns_a_400_when_data_is_missing() {
-//     Arrange
+    //     Arrange
     let app = spawn_app().await;
     let client = reqwest::Client::new();
     let test_cases = vec![
         ("name=le%20guin", "missing the email"),
         ("email=ursula_le_guin%40gmail.com", "missing the name"),
-        ("", "missing both name and email")
+        ("", "missing both name and email"),
     ];
 
     for (invalid_body, error_message) in test_cases {
@@ -53,9 +53,12 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
             .expect("Failed to execute request");
 
         //     Assert
-        assert_eq!(400,
-        response.status().as_u16(),
-        "The API did not fail with 400 Bad Request when the payload was {}", error_message);
+        assert_eq!(
+            400,
+            response.status().as_u16(),
+            "The API did not fail with 400 Bad Request when the payload was {}",
+            error_message
+        );
     }
 }
 
@@ -74,7 +77,7 @@ async fn health_check_works() {
 
 pub struct TestApp {
     pub address: String,
-    pub db_pool: PgPool
+    pub db_pool: PgPool,
 }
 
 async fn spawn_app() -> TestApp {
@@ -88,14 +91,11 @@ async fn spawn_app() -> TestApp {
 
     let server = startup::run(listener, db_pool.clone()).expect("Failed to bind address");
     let _ = tokio::spawn(server);
-    TestApp {
-        address,
-        db_pool
-    }
+    TestApp { address, db_pool }
 }
 
 pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
-//     Create database
+    //     Create database
     let mut connection = PgConnection::connect(&config.connection_string_without_db())
         .await
         .expect("Failed to connect to Postgres");
@@ -104,7 +104,7 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
         .await
         .expect("Failed to create database");
 
-//     Migrate database
+    //     Migrate database
     let db_pool = PgPool::connect(&config.connection_string())
         .await
         .expect("Failed to connect to Postgres");
