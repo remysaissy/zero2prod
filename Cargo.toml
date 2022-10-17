@@ -19,3 +19,19 @@ name = "zero2prod"
 actix-web = "4.2"
 tokio = { version = "1.21", features = ["macros", "rt-multi-thread"]}
 reqwest = "0.11"
+serde = { version = "1.0", features = ["derive"]}
+config = "0.13"
+uuid = { version = "1.2", features = ["v4"]}
+chrono = "0.4"
+
+[dependencies.sqlx]
+version = "0.6"
+default-features = false
+features = [
+    "runtime-actix-rustls",
+    "macros",
+    "postgres",
+    "uuid",
+    "chrono",
+    "migrate"
+]

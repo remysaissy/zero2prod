@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:12
+        image: postgres:15-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
@@ -29,7 +29,7 @@ jobs:
         ports:
           - 5432:5432
       redis:
-        image: redis:6
+        image: redis:7-alpine
         ports:
           - 6379:6379
     env:
@@ -111,7 +111,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:12
+        image: postgres:15-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
@@ -169,7 +169,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:12
+        image: postgres:15-alpine
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: password
@@ -177,7 +177,7 @@ jobs:
         ports:
           - 5432:5432
       redis:
-        image: redis:6
+        image: redis:7-alpine
         ports:
           - 6379:6379
     env:
