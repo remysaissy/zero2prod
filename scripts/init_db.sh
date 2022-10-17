@@ -45,9 +45,14 @@ then
 fi
 
 # Keep pinging Postgres until it's ready to accept commands
-sleep 1
-export PGPASSWORD="${DB_PASSWORD}"
-until docker exec ${CONTAINER_NAME} psql -U ${DB_USER} -c '\q'; do
+until docker run \
+    -e PGPASSWORD=${DB_PASSWORD} \
+    --rm \
+    -i \
+    -t \
+    --net=host \
+    postgres:15-alpine \
+    psql -h localhost -p 5432 -d "postgres" -U ${DB_USER} -c '\q'; do
   >&2 echo "Postgres is still unavailable - sleeping"
   sleep 1
 done
