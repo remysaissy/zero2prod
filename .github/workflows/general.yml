@@ -37,11 +37,11 @@ jobs:
       SQLX_FEATURES: "rustls,postgres"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@main
 
       - name: Cache dependencies
         id: cache-dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@main
         with:
           path: |
             ~/.cargo/registry
@@ -50,14 +50,14 @@ jobs:
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions-rs/toolchain@master
         with:
           profile: minimal
           toolchain: stable
           override: true
 
       - name: Cache sqlx-cli
-        uses: actions/cache@v2
+        uses: actions/cache@main
         id: cache-sqlx
         with:
           path: |
@@ -65,7 +65,7 @@ jobs:
             ~/.cargo/bin/cargo-sqlx
           key: ${{ runner.os }}-sqlx-${{ env.SQLX_VERSION }}
       - name: Install sqlx-cli
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@master
         if: steps.cache-sqlx.outputs.cache-hit == false
         with:
           command: install 
@@ -87,7 +87,7 @@ jobs:
           cargo sqlx prepare --check -- --bin zero2prod
 
       - name: Run cargo test
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@master
         with:
           command: test
 
@@ -95,13 +95,13 @@ jobs:
     name: Rustfmt
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@main
+      - uses: actions-rs/toolchain@master
         with:
           toolchain: stable
           override: true
           components: rustfmt
-      - uses: actions-rs/cargo@v1
+      - uses: actions-rs/cargo@master
         with:
           command: fmt
           args: --all -- --check
@@ -123,17 +123,17 @@ jobs:
       SQLX_FEATURES: "rustls,postgres"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@main
 
       - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions-rs/toolchain@master
         with:
           toolchain: stable
           components: clippy
           override: true
 
       - name: Cache sqlx-cli
-        uses: actions/cache@v2
+        uses: actions/cache@main
         id: cache-sqlx
         with:
           path: |
@@ -141,7 +141,7 @@ jobs:
           key: ${{ runner.os }}-sqlx-${{ env.SQLX_VERSION }}
 
       - name: Install sqlx-cli 
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@master
         if: steps.cache-sqlx.outputs.cache-hit == false
         with:
           command: install 
@@ -159,7 +159,7 @@ jobs:
           SKIP_DOCKER=true ./scripts/init_db.sh
 
       - name: Run clippy
-        uses: actions-rs/clippy-check@v1
+        uses: actions-rs/clippy-check@master
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           args: -- -D warnings
@@ -185,16 +185,16 @@ jobs:
       SQLX_FEATURES: "rustls,postgres"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@main
 
       - name: Install stable toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions-rs/toolchain@master
         with:
           toolchain: stable
           override: true
 
       - name: Cache sqlx-cli
-        uses: actions/cache@v2
+        uses: actions/cache@main
         id: cache-sqlx
         with:
           path: |
@@ -202,7 +202,7 @@ jobs:
           key: ${{ runner.os }}-sqlx-${{ env.SQLX_VERSION }}
 
       - name: Install sqlx-cli 
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@master
         if: steps.cache-sqlx.outputs.cache-hit == false
         with:
           command: install 
@@ -220,6 +220,6 @@ jobs:
           SKIP_DOCKER=true ./scripts/init_db.sh
 
       - name: Run cargo-tarpaulin
-        uses: actions-rs/tarpaulin@v0.1
+        uses: actions-rs/tarpaulin@master
         with:
           args: '--ignore-tests --avoid-cfg-tarpaulin'
