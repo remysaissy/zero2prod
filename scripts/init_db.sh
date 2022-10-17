@@ -49,7 +49,6 @@ until docker run \
     -e PGPASSWORD=${DB_PASSWORD} \
     --rm \
     -i \
-    -t \
     --net=host \
     postgres:15-alpine \
     psql -h localhost -p 5432 -d "postgres" -U ${DB_USER} -c '\q'; do
