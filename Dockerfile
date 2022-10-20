@@ -1,5 +1,5 @@
 # We use the latest Rust stable release as base image
-FROM rust:1.59.0
+FROM rust:1.64.0
 # Let's switch our working directory to `app` (equivalent to `cd app`)
 # The `app` folder will be created for us by Docker in case it does not
 # exist already.
@@ -14,5 +14,7 @@ ENV SQLX_OFFLINE true
 # Let's build our binary!
 # We'll use the release profile to make it faaaast
 RUN cargo build --release
+# Set the environment to production
+ENV APP_ENVIRONMENT production
 # When `docker run` is executed, launch the binary!
 ENTRYPOINT ["./target/release/zero2prod"]
