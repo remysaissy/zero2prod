@@ -1,5 +1,5 @@
 # We use the latest Rust stable release as base image
-FROM rust:1.63.0
+FROM rust:1.59.0
 # Let's switch our working directory to `app` (equivalent to `cd app`)
 # The `app` folder will be created for us by Docker in case it does not
 # exist already.
