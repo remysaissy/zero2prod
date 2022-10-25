@@ -39,7 +39,7 @@ then
     -e POSTGRES_DB=${DB_NAME} \
     -p "${DB_PORT}":5432 \
     -d \
-    postgres:15-alpine \
+    postgres:12-alpine \
     postgres -N 1000
     # ^ Increased maximum number of connections for testing purposes
 fi
@@ -50,7 +50,7 @@ until docker run \
     --rm \
     -i \
     --net=host \
-    postgres:15-alpine \
+    postgres:12-alpine \
     psql -h localhost -p 5432 -d "postgres" -U ${DB_USER} -c '\q'; do
   >&2 echo "Postgres is still unavailable - sleeping"
   sleep 1
