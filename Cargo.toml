@@ -31,6 +31,7 @@ tracing-log = "0.1"
 secrecy = {version = "0.8", features = ["serde"]}
 unicode-segmentation = "1.10"
 validator = "0.16"
+rand = {version = "0.8", features = ["std_rng"]}
 
 [dependencies.sqlx]
 version = "0.6"
@@ -59,3 +60,4 @@ quickcheck_macros = "0.9"
 wiremock = "0.5"
 tokio = {version = "1", features = ["macros", "rt"]}
 serde_json = "1.0"
+linkify = "0.9"
