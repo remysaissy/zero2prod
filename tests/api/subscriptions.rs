@@ -127,8 +127,21 @@ async fn subscribe_sends_a_confirmation_email_for_valid_data() {
 
     // Act
     app.post_subscriptions(body.into()).await;
+}
+
+#[tokio::test]
+async fn subscribe_fails_if_there_is_a_fatal_database_error() {
+    // Arrange
+    let app = spawn_app().await;
+    let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
+    sqlx::query!("ALTER TABLE subscriptions DROP COLUMN email;")
+        .execute(&app.db_pool)
+        .await
+        .unwrap();
+
+    // Act
+    let response = app.post_subscriptions(body.into()).await;
 
     // Assert
-
-    // Mock asserts on drop
+    assert_eq!(response.status().as_u16(), 500);
 }
