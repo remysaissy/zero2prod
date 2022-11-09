@@ -3,7 +3,8 @@ use reqwest::{Client, Response, Url};
 use sqlx::Executor;
 use sqlx::{Connection, PgConnection, PgPool};
 use uuid::Uuid;
-use wiremock::MockServer;
+use wiremock::matchers::{method, path};
+use wiremock::{Mock, MockServer, ResponseTemplate};
 use zero2prod::configuration::{get_configuration, DatabaseSettings};
 use zero2prod::startup::{get_connection_pool, Application};
 use zero2prod::telemetry::{get_subscriber, init_subscriber};
@@ -22,6 +23,38 @@ pub struct TestApp {
 }
 
 impl TestApp {
+    pub async fn create_unconfirmed_subscriber(&self) -> ConfirmationLinks {
+        let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
+        let _mock_guard = Mock::given(path("/email"))
+            .and(method("POST"))
+            .respond_with(ResponseTemplate::new(200))
+            .named("Create unconfirmed subscriber")
+            .expect(1)
+            .mount_as_scoped(&self.email_server)
+            .await;
+        self.post_subscriptions(body.into()).await;
+
+        let email_request = &self
+            .email_server
+            .received_requests()
+            .await
+            .unwrap()
+            .pop()
+            .unwrap();
+        self.get_confirmation_links(email_request)
+    }
+
+    pub async fn create_confirmed_subscriber(&self) {
+        // We can then reuse the same helper and just add
+        // an extra step to actually call the confirmation link!
+        let confirmation_link = self.create_unconfirmed_subscriber().await;
+        reqwest::get(confirmation_link.html)
+            .await
+            .unwrap()
+            .error_for_status()
+            .unwrap();
+    }
+
     pub async fn post_subscriptions(&self, body: String) -> Response {
         Client::new()
             .post(format!("{}/subscriptions", &self.address))
